@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sushant Caps | Premium Store</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#0a0a0a;
+color:white;
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 30px;
+background:black;
+box-shadow:0 0 10px cyan;
+}
+
+.logo{
+font-size:24px;
+font-weight:bold;
+color:cyan;
+}
+
+.cart-btn{
+background:cyan;
+color:black;
+padding:10px;
+border:none;
+cursor:pointer;
+font-weight:bold;
+}
+
+.container{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:20px;
+padding:20px;
+}
+
+.card{
+background:#111;
+padding:15px;
+border-radius:15px;
+width:220px;
+text-align:center;
+box-shadow:0 0 15px rgba(0,255,255,0.3);
+}
+
+.card img{
+width:100%;
+border-radius:10px;
+}
+
+.price{
+color:cyan;
+font-size:20px;
+}
+
+button{
+padding:8px;
+margin:5px;
+border:none;
+cursor:pointer;
+border-radius:8px;
+}
+
+.add{
+background:cyan;
+color:black;
+font-weight:bold;
+}
+
+.qty{
+width:50px;
+}
+
+.cart-panel{
+position:fixed;
+right:0;
+top:0;
+width:350px;
+height:100%;
+background:black;
+padding:20px;
+overflow:auto;
+box-shadow:-5px 0 15px cyan;
+display:none;
+}
+
+input, select{
+width:100%;
+padding:10px;
+margin:5px 0;
+border-radius:8px;
+border:none;
+}
+
+.order-btn{
+background:lime;
+color:black;
+font-weight:bold;
+width:100%;
+}
+
+.remove{
+background:red;
+color:white;
+}
+
+.total{
+font-size:22px;
+color:cyan;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">Sushant Caps</div>
+
+<button class="cart-btn" onclick="toggleCart()">
+Cart (<span id="count">0</span>)
+</button>
+
+</header>
+
+
+<div class="container">
+
+<div class="card">
+<img src="cap1.jpg">
+<h3>RCB Cap</h3>
+<div class="price">₹199</div>
+<input type="number" value="1" min="1" id="q1" class="qty">
+<button class="add" onclick="add('RCB Cap',199,'q1')">Add</button>
+</div>
+
+<div class="card">
+<img src="cap2.jpg">
+<h3>MI Cap</h3>
+<div class="price">₹199</div>
+<input type="number" value="1" min="1" id="q2" class="qty">
+<button class="add" onclick="add('MI Cap',199,'q2')">Add</button>
+</div>
+
+<div class="card">
+<img src="cap3.jpg">
+<h3>CSK Cap</h3>
+<div class="price">₹199</div>
+<input type="number" value="1" min="1" id="q3" class="qty">
+<button class="add" onclick="add('CSK Cap',199,'q3')">Add</button>
+</div>
+
+</div>
+
+
+<div class="cart-panel" id="cartPanel">
+
+<h2>Your Cart</h2>
+
+<div id="items"></div>
+
+<div class="total">
+Total: ₹<span id="total">0</span>
+</div>
+
+<h3>Customer Details</h3>
+
+<input id="name" placeholder="Full Name">
+
+<input id="phone" placeholder="Phone Number">
+
+<input id="address" placeholder="Address">
+
+<select id="method">
+<option>Delivery</option>
+<option>Pickup</option>
+</select>
+
+<button class="order-btn" onclick="order()">
+Place Order on WhatsApp
+</button>
+
+</div>
+
+
+
+<script>
+
+let cart=JSON.parse(localStorage.getItem("cart"))||[];
+
+function toggleCart(){
+let panel=document.getElementById("cartPanel");
+panel.style.display=panel.style.display=="block"?"none":"block";
+}
+
+function add(name,price,qid){
+
+let qty=parseInt(document.getElementById(qid).value);
+
+cart.push({name,price,qty});
+
+save();
+
+display();
+
+}
+
+function remove(index){
+
+cart.splice(index,1);
+
+save();
+
+display();
+
+}
+
+function save(){
+
+localStorage.setItem("cart",JSON.stringify(cart));
+
+}
+
+function display(){
+
+let items="";
+let total=0;
+let count=0;
+
+cart.forEach((item,index)=>{
+
+let sum=item.price*item.qty;
+
+total+=sum;
+count+=item.qty;
+
+items+=`
+${item.name}
+x${item.qty}
+₹${sum}
+<button class="remove" onclick="remove(${index})">X</button>
+<br><br>
+`;
+
+});
+
+document.getElementById("items").innerHTML=items;
+
+document.getElementById("total").innerText=total;
+
+document.getElementById("count").innerText=count;
+
+}
+
+display();
+
+
+function order(){
+
+if(cart.length==0){
+
+alert("Cart empty");
+return;
+
+}
+
+let name=document.getElementById("name").value;
+let phone=document.getElementById("phone").value;
+let address=document.getElementById("address").value;
+let method=document.getElementById("method").value;
+
+let msg="NEW ORDER%0A%0A";
+
+msg+="Name: "+name+"%0A";
+msg+="Phone: "+phone+"%0A";
+msg+="Method: "+method+"%0A";
+msg+="Address: "+address+"%0A%0A";
+
+let total=0;
+
+cart.forEach(item=>{
+
+msg+=item.name+" x"+item.qty+"%0A";
+
+total+=item.price*item.qty;
+
+});
+
+msg+="%0ATotal ₹"+total;
+
+window.open("https://wa.me/918054077730?text="+msg);
+
+}
+
+</script>
+
+</body>
+</html>
